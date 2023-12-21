@@ -57,7 +57,14 @@ window.onload = function()
 {
     // sets notepad to whatever it was before
     (async () => {
-        const response = await chrome.runtime.sendMessage({message: "send"});
-        document.getElementById("notepad").textContent = response.text;
+        // Wait for the result of chrome.storage.local.get using async/await
+        const result = await new Promise((resolve) =>
+            chrome.storage.local.get(["key"], resolve)
+        );
+
+        const s = result.key;
+        document.getElementById("notepad").textContent = s;
+
+        console.log("Value currently is " + s);
     })();
 }
