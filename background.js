@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse)
     } else
     {
         let msg = request.message;
-        chrome.storage.local.set({key: msg}).then(() =>
+        chrome.storage.local.set({"msg" : msg}).then(() =>
         {
             console.log("Value is set " + msg);
         });
