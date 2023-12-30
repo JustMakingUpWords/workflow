@@ -88,24 +88,26 @@ function stopwatchRun()
 // start stopwatch
 stopwatchStartButton.onclick = function()
 {
-    stopwatchInterval = stopwatchRun();
-    chrome.storage.local.set({"stopwatchStarted" : true}).then(() => {});
-
-    // if it wasnt running before and it just started running now
     if (!stopwatchRunning)
     {
-        const startTime = new Date(); // defaults to current time
+        stopwatchInterval = stopwatchRun();
+        chrome.storage.local.set({"stopwatchStarted" : true}).then(() => {});
+        
+        let startTime = new Date(); // defaults to current time
+        startTime = startTime.getTime();
+        alert(startTime);
         chrome.storage.local.set({"stopwatchStartTime" : startTime}).then(() => {});
     }
-
     stopwatchRunning = true;
-    //alert("STARTED");
 
 };
 // stop stopwatch
 stopwatchStopButton.onclick = function()
 {
     clearInterval(stopwatchInterval);
+    clearInterval(stopwatchInterval);
+    clearInterval(stopwatchInterval);
+
     chrome.storage.local.set({"stopwatchStarted" : false}).then(() => {});
     stopwatchRunning = false;
     //alert("ENDED");
@@ -128,6 +130,7 @@ stopwatchResetButton.onclick = function()
 // when popup is opened
 window.onload = function()
 {
+    //chrome.storage.local.clear();
     // sets things to whatever they were before
     (async () => {
         // changes notepad to previous value
@@ -144,40 +147,44 @@ window.onload = function()
         const stopwatchRunOrNot = await new Promise((resolve) => // Wait for the result of chrome.storage.local.get using async/await
             chrome.storage.local.get("stopwatchStarted", resolve)
         );
+
+        const r = stopwatchRunOrNot.stopwatchStarted;
+        console.log("STOPWATCH IS: " + r);
+        stopwatchRunning = r;
+
         const stopwatchTime = await new Promise((resolve) => // Wait for the result of chrome.storage.local.get using async/await
             chrome.storage.local.get("stopwatchStartTime", resolve)
         );
 
-        const r = stopwatchRunOrNot.stopwatchStarted;
-        console.log("STOPWATCH IS: " + r);
         const t = stopwatchTime.stopwatchStartTime;
         console.log("STARTING TIME: " + t);
-
-        const d = new Date();
-        console.log(d);
 
         if (r)
         {
             stopwatchInterval = stopwatchRun();
-
-            const currentTime = new Date();
-
-            const timeDifference = currentTime - t;
-
-            // Convert milliseconds into days, hours, minutes, and seconds
-            const millisecondsPerSecond = 1000;
-            const millisecondsPerMinute = millisecondsPerSecond * 60;
-            const millisecondsPerHour = millisecondsPerMinute * 60;
-            const millisecondsPerDay = millisecondsPerHour * 24;
-
-            const days = Math.floor(timeDifference / millisecondsPerDay);
-            const hours = Math.floor((timeDifference % millisecondsPerDay) / millisecondsPerHour);
-            const minutes = Math.floor((timeDifference % millisecondsPerHour) / millisecondsPerMinute);
-            const seconds = Math.floor((timeDifference % millisecondsPerMinute) / millisecondsPerSecond);
-
-            // Log the time difference in a human-readable format
-            console.log(`Time Difference: ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds.`);
         }
+
+        // find time difference
+        const currentTime = new Date();
+        const timeDifference = currentTime - t;
+
+        // Convert milliseconds into days, hours, minutes, and seconds
+        const millisecondsPerSecond = 1000;
+        const millisecondsPerMinute = millisecondsPerSecond * 60;
+        const millisecondsPerHour = millisecondsPerMinute * 60;
+        const millisecondsPerDay = millisecondsPerHour * 24;
+
+        const days = Math.floor(timeDifference / millisecondsPerDay);
+        const hours = Math.floor((timeDifference % millisecondsPerDay) / millisecondsPerHour);
+        const minutes = Math.floor((timeDifference % millisecondsPerHour) / millisecondsPerMinute);
+        const seconds = Math.floor((timeDifference % millisecondsPerMinute) / millisecondsPerSecond);
+
+        // Log the time difference in a human-readable format
+        console.log(`Time Difference: ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds.`);
+
+        swSeconds = seconds;
+        swMinutes = minutes;
+        swHours = hours;
 
     })();
 
